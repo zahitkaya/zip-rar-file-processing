@@ -1,5 +1,6 @@
 package com.spring.file.operations.controller.rest;
 
+import com.github.junrar.exception.RarException;
 import com.spring.file.operations.model.FileInformationsDto;
 import com.spring.file.operations.model.ZipDto;
 import com.spring.file.operations.service.impl.ZipViewServiceImpl;
@@ -33,9 +34,14 @@ public class ZipViewController {
 
     final ZipViewServiceImpl zipViewService;
 
-    @PostMapping(path = "/upload",consumes = { "multipart/form-data" })
+    @PostMapping(path = "/getZipInformations",consumes = { "multipart/form-data" })
     public List<FileInformationsDto> uploadToLocalFileSystem(@RequestParam("file") MultipartFile file) throws IOException {
         return zipViewService.getZipInfo(file);
+    }
+
+    @PostMapping(path = "/getRarInformations",consumes = { "multipart/form-data" })
+    public List<FileInformationsDto> a(@RequestParam("file") MultipartFile file) throws RarException, IOException {
+         return zipViewService.unPackRar(file);
     }
 
 

@@ -1,10 +1,14 @@
 package com.spring.file.operations.service.impl;
 
+import com.github.junrar.Archive;
+import com.github.junrar.exception.RarException;
+import com.github.junrar.rarfile.FileHeader;
 import com.spring.file.operations.model.FileInformationsDto;
 import com.spring.file.operations.service.ZipViewService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.stereotype.Service;
@@ -41,8 +45,7 @@ public class ZipViewServiceImpl implements ZipViewService {
         ZipEntry entry = null;
         list.clear();
         while ((entry = zis.getNextEntry()) != null) {
-            FileNameMap fileNameMap = URLConnection.getFileNameMap();
-            String mimeType = fileNameMap.getContentTypeFor(entry.getName());
+            String mimeType = getContentTypeByName(entry.getName());
             // "process each file, based on what it is and whether its a directory etc."
             if (!entry.isDirectory() && mimeType != null && (isValidFile(mimeType))) {
                 FileInformationsDto fileInformationsDto = FileInformationsDto.builder()
@@ -54,6 +57,30 @@ public class ZipViewServiceImpl implements ZipViewService {
             }
         }
         return list;
+    }
+
+    @Override
+    public List<FileInformationsDto> unPackRar(MultipartFile rarFile) throws RarException, IOException {
+        List<FileInformationsDto> files = new ArrayList<>();
+        final Archive archive = new Archive(rarFile.getInputStream());
+        while (true) {
+            FileHeader fileHeader = archive.nextFileHeader();
+            if (fileHeader == null) {
+                break;
+            }
+            String fileName = fileHeader.getFileName();
+            String contentType=getContentTypeByName(fileName);
+            if (isValidFile(getContentTypeByName(fileName)+"")) {
+                FileInformationsDto fileInformationsDto = FileInformationsDto.builder()
+                        .fileName(fileName)
+                        .size(fileHeader.getUnpSize())
+                        .contentType(getContentTypeByName(fileName))
+                        .build();
+                files.add(fileInformationsDto);
+            }
+
+        }
+        return files;
     }
 
     public boolean isValidFile(String fileName) {
@@ -73,6 +100,11 @@ public class ZipViewServiceImpl implements ZipViewService {
                 return true;
         }
         return false;
+    }
+
+    public String getContentTypeByName(String fileName) {
+        FileNameMap fileNameMap = URLConnection.getFileNameMap();
+        return fileNameMap.getContentTypeFor(fileName);
     }
 
 }
