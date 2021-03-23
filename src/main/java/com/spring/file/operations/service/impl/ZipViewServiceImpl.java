@@ -8,21 +8,13 @@ import com.spring.file.operations.service.ZipViewService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.activation.MimetypesFileTypeMap;
 import java.io.*;
 import java.net.FileNameMap;
 import java.net.URLConnection;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -39,6 +31,7 @@ public class ZipViewServiceImpl implements ZipViewService {
 
     List<FileInformationsDto> list = new ArrayList<>();
 
+    @Override
     public List<FileInformationsDto> getZipInfo(MultipartFile file) throws IOException {
         byte[] bytes = file.getBytes();
         ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(bytes));
@@ -63,13 +56,8 @@ public class ZipViewServiceImpl implements ZipViewService {
     public List<FileInformationsDto> unPackRar(MultipartFile rarFile) throws RarException, IOException {
         List<FileInformationsDto> files = new ArrayList<>();
         final Archive archive = new Archive(rarFile.getInputStream());
-        while (true) {
-            FileHeader fileHeader = archive.nextFileHeader();
-            if (fileHeader == null) {
-                break;
-            }
+        for (FileHeader fileHeader=archive.nextFileHeader();fileHeader!=null;fileHeader=archive.nextFileHeader()){
             String fileName = fileHeader.getFileName();
-            String contentType=getContentTypeByName(fileName);
             if (isValidFile(getContentTypeByName(fileName)+"")) {
                 FileInformationsDto fileInformationsDto = FileInformationsDto.builder()
                         .fileName(fileName)
@@ -78,7 +66,6 @@ public class ZipViewServiceImpl implements ZipViewService {
                         .build();
                 files.add(fileInformationsDto);
             }
-
         }
         return files;
     }
@@ -109,12 +96,3 @@ public class ZipViewServiceImpl implements ZipViewService {
 
 }
 
-
-
-      /*
-        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/files/download/")
-                .path(fileName)
-                .toUriString();
-
-         */
