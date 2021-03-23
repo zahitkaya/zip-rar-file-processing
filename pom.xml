@@ -18,6 +18,9 @@
         <springdoc.version>1.5.2</springdoc.version>
         <mapstruct.version>1.4.1.Final</mapstruct.version>
         <problem-spring-web.version>0.26.2</problem-spring-web.version>
+        <zip4j.version>1.3.1</zip4j.version>
+        <commons.version>2.6</commons.version>
+        <junrar.version>7.4.0</junrar.version>
     </properties>
     <dependencies>
         <dependency>
@@ -79,22 +82,21 @@
             <version>${springdoc.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/net.lingala.zip4j/zip4j -->
-        <!-- https://mvnrepository.com/artifact/net.lingala.zip4j/zip4j -->
         <dependency>
             <groupId>net.lingala.zip4j</groupId>
             <artifactId>zip4j</artifactId>
-            <version>1.3.1</version>
+            <version>${zip4j.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.6</version>
+            <version>${commons.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.junrar</groupId>
             <artifactId>junrar</artifactId>
-            <version>7.4.0</version>
+            <version>${junrar.version}</version>
         </dependency>
 
 
