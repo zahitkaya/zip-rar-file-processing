@@ -43,7 +43,7 @@ public class ZipViewServiceImpl implements ZipViewService {
             if (!entry.isDirectory() && mimeType != null && (isValidFile(mimeType))) {
                 FileInformationsDto fileInformationsDto = FileInformationsDto.builder()
                         .size(entry.getSize())
-                        .fileName(entry.getName())
+                        .fileName(getFileName(entry.getName()))
                         .contentType(mimeType)
                         .build();
                 list.add(fileInformationsDto);
@@ -60,7 +60,7 @@ public class ZipViewServiceImpl implements ZipViewService {
             String fileName = fileHeader.getFileName();
             if (isValidFile(getContentTypeByName(fileName)+"")) {
                 FileInformationsDto fileInformationsDto = FileInformationsDto.builder()
-                        .fileName(fileName)
+                        .fileName(getFileName(fileName))
                         .size(fileHeader.getUnpSize())
                         .contentType(getContentTypeByName(fileName))
                         .build();
@@ -92,6 +92,12 @@ public class ZipViewServiceImpl implements ZipViewService {
     public String getContentTypeByName(String fileName) {
         FileNameMap fileNameMap = URLConnection.getFileNameMap();
         return fileNameMap.getContentTypeFor(fileName);
+    }
+
+    public  String getFileName(String filePath){
+        val pathArray=filePath.split("/");
+        int length=pathArray.length;
+        return pathArray[length-1];
     }
 
 }
