@@ -4,6 +4,8 @@ import com.github.junrar.exception.RarException;
 import com.spring.file.operations.model.FileInformationsDto;
 import com.spring.file.operations.model.ZipDto;
 import com.spring.file.operations.service.impl.ZipViewServiceImpl;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -26,6 +28,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.zip.ZipException;
 
+@Tag(name = "Compressed Files", description = "Reaching to information inside of a compressed file")
 @RestController
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -35,11 +38,13 @@ public class ZipViewController {
     final ZipViewServiceImpl zipViewService;
 
     @PostMapping(path = "/getZipInformations",consumes = { "multipart/form-data" })
+    @Operation(description = "Returns rar file informations as list")
     public List<FileInformationsDto> uploadToLocalFileSystem(@RequestParam("file") MultipartFile file) throws IOException {
         return zipViewService.getZipInfo(file);
     }
 
     @PostMapping(path = "/getRarInformations",consumes = { "multipart/form-data" })
+    @Operation(description = "Returns zip file informations as list")
     public List<FileInformationsDto> a(@RequestParam("file") MultipartFile file) throws RarException, IOException {
          return zipViewService.unPackRar(file);
     }
